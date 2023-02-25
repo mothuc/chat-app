@@ -1,18 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 
-function Login(props) {
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+
+function Login() {
+  const [err, setErr] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const email = e.target[0].value;
+    const password = e.target[1].value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/");
+      console.log("Login done");
+    } catch (err) {
+      console.log(err);
+      setErr(true);
+    }
+  };
   return (
     <div className="formContainer">
       <div className="formWrapper">
         <span className="logo">Chat App</span>
         <span className="title">Login</span>
-        <form>
+        <form onSubmit={handleSubmit}>
           <input type="email" placeholder="email" />
-          <input type="passwordd" placeholder="password" />
+          <input type="password" placeholder="password" />
           <button>Sign in</button>
+          {err && <span>Something went wrong!</span>}
         </form>
         <p>
-          You don't have an account? <span>Register</span>{" "}
+          You don't have an account? <Link to="/register">Register</Link>
         </p>
       </div>
     </div>
